@@ -21,7 +21,8 @@ typedef struct
    int16_t timeOut;//(probably) needed after draining to avoid bouncing
    int16_t sample;
    int16_t velocity = 256;//0-512
-   int16_t gain;
+   int16_t sampleGain;
+   int16_t hitGain;
    bool hit;
    piezoState_t State;
 } PiezoInput;
@@ -67,10 +68,10 @@ int PiezoState(int numPiezo)
     Piezo[p].topValue = min(Piezo[p].topValue,1024);
     PiezoSound(p);
     //max - velocity = velocity range
-    int piezoGain = (1024 - Piezo[p].velocity) + (Piezo[p].topValue*Piezo[p].velocity)>>10;
-    piezoGain<<=9;
-    EffectGain[p]->gain(piezoGain);//should be 6, but is too quit
-    DEBUG_PRINT(piezoGain);
+    Piezo[p].hitGain = (1024 - Piezo[p].velocity) + (Piezo[p].topValue*Piezo[p].velocity)>>10;
+    Piezo[p].hitGain<<=9;
+    EffectGain[p]->gain(Piezo[p].hitGain);//should be 6, but is too quit
+    DEBUG_PRINT(Piezo[p].hitGain);
     Piezo[p].hit=0;
   }
   return Piezo[p].Value;
@@ -103,12 +104,54 @@ void drainPiezos()
   Wire.write(drainByte);
   Wire.endTransmission();
 }
-void PiezoSound(int numPiezo)
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Piezosound
+//seeks for an idle playFlashRaw and makes it play a sample
+//adds one to sampleCountup
+//writes "current time" to sampleCounts[8]
+//if all are busy
+//find the one with the oldest count and replace it with a new one
+//
+//
+//todo:
+// - linking pads together, so one can mute the other
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+int PiezoSound(int numPiezo)
 {
+  static uint32_t sampleCounts[8];
+  static uint32_t sampleCountup=0;
   int p = numPiezo;
-  playFlashRaw[p]->play(serialFlash_Samples[Piezo[p].sample]);
-  Serial.print("played Piezo ");
-  Serial.println(numPiezo);
+  char* filename = serialFlash_Samples[Piezo[p].sample];
+  for(int i=0;i<8;i++)
+  {
+    if(!playFlashRaw[i]->isPlaying())
+    {
+      //found an idle play playFlashRaw object, make a sound
+      playFlashRaw[i]->play(filename);
+      sampleCounts[i] = sampleCountup;
+      sampleCountup+=1;
+      return i;
+    }
+  }
+  //all busy
+  //todo: kill the oldest or quitest sound
+  uint32_t lowestSampleCount=0xFFFFFFFF;
+  int oldestSample=-1;
+  for(int i=0;i<8;i++)
+  {
+    if(lowestSampleCount > sampleCounts[i])
+    {
+      lowestSampleCount = sampleCounts[i];
+      oldestSample = i;
+    }
+  }
+  //found the oldest play playFlashRaw object, make a sound
+  playFlashRaw[oldestSample]->play(filename);
+  sampleCounts[oldestSample] = sampleCountup;
+  sampleCountup+=1;
+  return oldestSample;
 }
 void piezoPreset()
 {

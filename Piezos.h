@@ -11,7 +11,7 @@ void preReadPiezo(int numPiezo);
 void PiezoSetSample(int numPiezo, uint16_t numSample);
 int PiezoState(int numPiezo);
 void drainPiezos();
-void PiezoSound(int numPiezo);
+int PiezoSound(int numPiezo);
 void piezoPreset();
 //available for other files
 extern int numPiezos;
