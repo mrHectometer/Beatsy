@@ -64,13 +64,10 @@ int PiezoState(int numPiezo)
   }
   if(Piezo[p].hit == 1)
   {
-    
     Piezo[p].topValue = min(Piezo[p].topValue,1024)-piezoRiseThreshold;
-    PiezoSound(p);
     //max - velocity = velocity range
     Piezo[p].hitGain = (1024 - Piezo[p].velocity) + (Piezo[p].topValue*Piezo[p].velocity)>>10;
-    Piezo[p].hitGain<<=9;//should be 6, but is too quit
-    EffectGain[p]->gain(Piezo[p].hitGain);
+    Piezo[p].hitGain<<=9;
     Serial.print("Piezo: ");
     Serial.print(p);
     Serial.print(" - velocity: ");
@@ -78,6 +75,7 @@ int PiezoState(int numPiezo)
     Serial.print(" - gain: ");
     Serial.println(Piezo[p].hitGain);
     Piezo[p].hit=0;
+    PiezoSound(p,Piezo[p].hitGain);
   }
   return Piezo[p].Value;
 }
@@ -123,7 +121,7 @@ void drainPiezos()
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-int PiezoSound(int numPiezo)
+int PiezoSound(int numPiezo, uint16_t velocity)
 {
   static uint32_t sampleCounts[8];
   static uint32_t sampleCountup=0;
@@ -135,6 +133,7 @@ int PiezoSound(int numPiezo)
     {
       //found an idle play playFlashRaw object, make a sound
       playFlashRaw[i]->play(filename);
+      EffectGain[i]->gain(velocity);
       sampleCounts[i] = sampleCountup;
       sampleCountup+=1;
       return i;
@@ -154,6 +153,7 @@ int PiezoSound(int numPiezo)
   }
   //found the oldest play playFlashRaw object, make a sound
   playFlashRaw[oldestSample]->play(filename);
+  EffectGain[oldestSample]->gain(velocity);
   sampleCounts[oldestSample] = sampleCountup;
   sampleCountup+=1;
   return oldestSample;
