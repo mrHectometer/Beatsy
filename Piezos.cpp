@@ -37,8 +37,8 @@ void preReadPiezo(int numPiezo)
 }
 int PiezoState(int numPiezo)
 {
-  int piezoRiseThreshold = 30;
-  int piezoFallThreshold = 20;
+  int piezoRiseThreshold = 50;
+  int piezoFallThreshold = 40;
   int p = numPiezo;
   Piezo[p].LastValue = Piezo[p].Value;
   Piezo[p].Value = analogRead(A2);
@@ -65,13 +65,18 @@ int PiezoState(int numPiezo)
   if(Piezo[p].hit == 1)
   {
     
-    Piezo[p].topValue = min(Piezo[p].topValue,1024);
+    Piezo[p].topValue = min(Piezo[p].topValue,1024)-piezoRiseThreshold;
     PiezoSound(p);
     //max - velocity = velocity range
     Piezo[p].hitGain = (1024 - Piezo[p].velocity) + (Piezo[p].topValue*Piezo[p].velocity)>>10;
-    Piezo[p].hitGain<<=9;
-    EffectGain[p]->gain(Piezo[p].hitGain);//should be 6, but is too quit
-    DEBUG_PRINT(Piezo[p].hitGain);
+    Piezo[p].hitGain<<=9;//should be 6, but is too quit
+    EffectGain[p]->gain(Piezo[p].hitGain);
+    Serial.print("Piezo: ");
+    Serial.print(p);
+    Serial.print(" - velocity: ");
+    Serial.println(Piezo[p].topValue);
+    Serial.print(" - gain: ");
+    Serial.println(Piezo[p].hitGain);
     Piezo[p].hit=0;
   }
   return Piezo[p].Value;
@@ -155,9 +160,9 @@ int PiezoSound(int numPiezo)
 }
 void piezoPreset()
 {
-  PiezoSetSample(0, 65);
+  PiezoSetSample(0, 0);
   PiezoSetSample(1, 76);
   PiezoSetSample(2, 37);
-  PiezoSetSample(3, 37);
+  PiezoSetSample(3, 65);
 }
 

@@ -5,7 +5,6 @@
 // - Piezo input 3 doesn't drain
 // - make a proper board
 // - add trellis and sequencer
-// - don't fix AudioPlaySerialflashRaw objects to piezo's, this hides occasional double triggering
 // - add mux board and volume buttons
 // - add rotary switch to switch patch/sample
 //
@@ -91,15 +90,23 @@ void setupMixers()
 {
   Serial.println("setup mixers");
   //left
-  mixer1L.gain(0,0.20);
-  mixer1L.gain(1,0.4);
-  mixer1L.gain(2,0.4);
-  mixer1L.gain(3,0.4);
+  mixer1L.gain(0,0.25);
+  mixer1L.gain(1,0.25);
+  mixer1L.gain(2,0.25);
+  mixer1L.gain(3,0.25);
+  mixer2L.gain(0,0.25);
+  mixer2L.gain(1,0.25);
+  mixer2L.gain(2,0.25);
+  mixer2L.gain(3,0.25);
   
-  mixer1R.gain(0,0.20);
-  mixer1R.gain(1,0.4);
-  mixer1R.gain(2,0.4);
-  mixer1R.gain(3,0.4);
+  mixer1R.gain(0,0.25);
+  mixer1R.gain(1,0.25);
+  mixer1R.gain(2,0.25);
+  mixer1R.gain(3,0.25);
+  mixer2R.gain(0,0.25);
+  mixer2R.gain(1,0.25);
+  mixer2R.gain(2,0.25);
+  mixer2R.gain(3,0.25);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
@@ -131,5 +138,5 @@ void loop()
   drainPiezos();//and drain
   
   currentPiezo+=1;
-  currentPiezo &= 3;//if > 3, set back to 0
+  if(currentPiezo > 3) currentPiezo = 0;
 }
