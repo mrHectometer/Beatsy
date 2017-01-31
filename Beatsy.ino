@@ -81,7 +81,6 @@ void setupGPIO()
   pinMode(19,OUTPUT);
   SPI.setSCK(14);  // Audio shield has SCK on pin 14
   SPI.setMOSI(7);  // Audio shield has MOSI on pin 7
-
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the mixer objects
@@ -107,15 +106,17 @@ void setupMixers()
   mixer2R.gain(1,0.25);
   mixer2R.gain(2,0.25);
   mixer2R.gain(3,0.25);
+
+  mixerL.gain(2,0.0);//I2S input: nothing yet but noise
+  mixerR.gain(2,0.0);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
 {
-  AudioMemory(80);
+  AudioMemory(40);
 //  while(!Serial) ;
-  delay(100);
   setupGPIO();
   setupFlash(FlashChipSelect);
   setupPortExpander();
@@ -138,5 +139,5 @@ void loop()
   drainPiezos();//and drain
   
   currentPiezo+=1;
-  if(currentPiezo > 3) currentPiezo = 0;
+  if(currentPiezo > numPiezos-1) currentPiezo = 0;
 }

@@ -8,7 +8,7 @@
 int PiezoCurrentValue[8];
 int PiezoLastValue[8];
 int PiezoDirection[8];
-int numPiezos = 4;
+const int numPiezos = 4;
 
 typedef enum  {idle=0, rise=1, fall=2} piezoState_t;
 
