@@ -67,7 +67,7 @@ int PiezoState(int numPiezo)
     Piezo[p].topValue = min(Piezo[p].topValue,1024)-piezoRiseThreshold;
     //max - velocity = velocity range
     Piezo[p].hitGain = (1024 - Piezo[p].velocity) + (Piezo[p].topValue*Piezo[p].velocity)>>10;
-    Piezo[p].hitGain<<=9;
+    Piezo[p].hitGain<<=10;
     Serial.print("Piezo: ");
     Serial.print(p);
     Serial.print(" - velocity: ");

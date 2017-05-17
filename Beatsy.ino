@@ -5,7 +5,7 @@
 // - Piezo input 3 doesn't drain
 // - make a proper board
 // - add trellis and sequencer
-// - add mux board and volume buttons
+// - Refactor multiplexer
 // - add rotary switch to switch patch/sample
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,6 +24,7 @@
 #include "routing.h"
 #include "Piezos.h"
 #include "FlashStorage.h"
+#include "Mux.h"
 #include <effect_gain.h>
 
 
@@ -49,9 +50,9 @@ void setupPortExpander()
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //GPIO
-//0
-//1
-//2
+//0     Multiplexer S0
+//1     Multiplexer S1
+//2     Multiplexer S2
 //3
 //4
 //5
@@ -66,7 +67,7 @@ void setupPortExpander()
 //14    SPI clock
 //15/A1 Audio board volume (there is a capacitor here)
 //16/A2 Piezo analog input
-//17
+//17    Multiplexer analog input A
 //18    I2S SDA
 //19    I2S SCL
 //22    Audio board TX
@@ -75,6 +76,7 @@ void setupPortExpander()
 void setupGPIO()
 {
   Serial.println("setup GPIO");
+  Mux_init(0, 1, 2, 17);
   pinMode(A1,INPUT);//15 - Audio board volume
   pinMode(A2,INPUT);//16 - piezo analog input
   pinMode(18,OUTPUT);
@@ -110,6 +112,7 @@ void setupMixers()
   mixerL.gain(2,0.0);//I2S input: nothing yet but noise
   mixerR.gain(2,0.0);
 }
+int mainVolume;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -123,7 +126,8 @@ void setup()
   setupMixers();
   piezoPreset();
   audioShield.enable();
-  audioShield.volume(0.6);
+  audioShield.volume(0.9);
+  Mux_assign(0,&mainVolume);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Main loop
@@ -140,4 +144,5 @@ void loop()
   
   currentPiezo+=1;
   if(currentPiezo > numPiezos-1) currentPiezo = 0;
+  Mux_read(0);
 }

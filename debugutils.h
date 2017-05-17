@@ -3,6 +3,8 @@
 
 #include <WProgram.h>
 
+#define DEBUG
+
 #ifdef DEBUG
 #define DEBUG_PRINT(arg)    \
     Serial.print(millis());     \
