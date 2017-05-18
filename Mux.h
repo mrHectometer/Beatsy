@@ -1,6 +1,8 @@
 #ifndef Mux_h
 #define Mux_h
-
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Includes
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 #include <Arduino.h>
 #include <Wire.h>
 #include <audio.h>
@@ -9,16 +11,25 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Variables
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-//extern const int numPiezos;
 
-//available from other file. Maybe not how it should be
-//extern AudioPlaySerialflashRaw *playFlashRaw[];
-extern AudioEffectGain *EffectGain[];
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-//Functions
+//main class
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void Mux_init(int _S0, int _S1, int _S2, int _MuxA);
-int Mux_read(int _input);
-void Mux_assign(int _input, int *variable);
+//assign variables to the multiplexer.
+//when the port is read, this variable is automatically updated.
+//overloaded for automatical reading
+class multiplexer
+{
+  public:
+  void init(int _S0, int _S1, int _S2, int _common);
+  void assign(int port, int *variable);
+  int read(int port);
+  int read();
+  private:
+  int S0,S1,S2,common;
+  int *assignedVar[8];
+  int muxPorts = 8;
+  int autoreadPort=0;
+};
 
 #endif

@@ -5,7 +5,7 @@
 // - Piezo input 3 doesn't drain
 // - make a proper board
 // - add trellis and sequencer
-// - Refactor multiplexer
+// - refactor piezos (make classes)
 // - add rotary switch to switch patch/sample
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,7 +30,8 @@
 
 const int FlashChipSelect = 6; // digital pin for flash chip CS pin
 
-
+multiplexer multiplexer1;
+int mainVolume;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the port expander
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -76,13 +77,28 @@ void setupPortExpander()
 void setupGPIO()
 {
   Serial.println("setup GPIO");
-  Mux_init(0, 1, 2, 17);
   pinMode(A1,INPUT);//15 - Audio board volume
   pinMode(A2,INPUT);//16 - piezo analog input
   pinMode(18,OUTPUT);
   pinMode(19,OUTPUT);
   SPI.setSCK(14);  // Audio shield has SCK on pin 14
   SPI.setMOSI(7);  // Audio shield has MOSI on pin 7
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Setup the multiplexer objects
+//note: must be fully initialized to prevent null pointer errors
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void setupMultiplexers();
+{
+  multiplexer1.init(0, 1, 2, 17);
+  multiplexer1.assign(0,&mainVolume);
+  multiplexer1.assign(1,&mainVolume);
+  multiplexer1.assign(2,&mainVolume);
+  multiplexer1.assign(3,&mainVolume);
+  multiplexer1.assign(4,&mainVolume);
+  multiplexer1.assign(5,&mainVolume);
+  multiplexer1.assign(6,&mainVolume);
+  multiplexer1.assign(7,&mainVolume);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the mixer objects
@@ -112,22 +128,21 @@ void setupMixers()
   mixerL.gain(2,0.0);//I2S input: nothing yet but noise
   mixerR.gain(2,0.0);
 }
-int mainVolume;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
 {
   AudioMemory(40);
-//  while(!Serial) ;
+  //while(!Serial) ;
   setupGPIO();
   setupFlash(FlashChipSelect);
   setupPortExpander();
   setupMixers();
+  setupMultiplexers();
   piezoPreset();
   audioShield.enable();
   audioShield.volume(0.9);
-  Mux_assign(0,&mainVolume);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Main loop
@@ -144,5 +159,5 @@ void loop()
   
   currentPiezo+=1;
   if(currentPiezo > numPiezos-1) currentPiezo = 0;
-  Mux_read(0);
+  multiplexer1.read();
 }

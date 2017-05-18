@@ -1,38 +1,58 @@
 #include "Mux.h"
-
-int S0,S1,S2,MuxA;
-int *MuxVariables[8];
-void Mux_init(int _S0, int _S1, int _S2, int _MuxA)
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Initialize:
+//assign 3 select ports and set the common
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void multiplexer::init(int _S0, int _S1, int _S2, int _common)
 {
   S0 = _S0;
   S1 = _S1;
   S2 = _S2;
-  MuxA = _MuxA;
+  common = _common;
   pinMode(S0,OUTPUT);
   pinMode(S1,OUTPUT);
   pinMode(S2,OUTPUT);
-  pinMode(MuxA,INPUT);
+  pinMode(common,INPUT);
 }
-
-int Mux_read(int _input)
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//read:
+//write the requested port number to the select bits
+//then do an analogRead.
+//if a variable is assigned, write the result to this variable.
+//also return the read value
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+int multiplexer::read(int port)
 {
-    bool b0 = bitRead(_input,0);
-    bool b1 = bitRead(_input,1);
-    bool b2 = bitRead(_input,2);
-    digitalWrite(S0,b0);
-    digitalWrite(S1,b1);
-    digitalWrite(S2,b2);
-    int analogInputValue = analogRead(MuxA);
-    if(*MuxVariables[_input] != NULL)
+    digitalWrite(S0,bitRead(port,0));
+    digitalWrite(S1,bitRead(port,1));
+    digitalWrite(S2,bitRead(port,2));
+    int analogInputValue = analogRead(common);
+    if(*assignedVar[port] != NULL)
     {
-        *MuxVariables[_input] = analogInputValue;
+        *assignedVar[port] = analogInputValue;
     }
     return analogInputValue;
 }
-
-void Mux_assign(int _input, int *variable)
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//auto read
+//automatically increments the read port every call
+//useful for keeping code clean when doing volume sliders
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+int multiplexer::read()
 {
-  MuxVariables[_input] = variable;
-  DEBUG_PRINT( (int) MuxVariables[_input]);
+    int analogInputValue = read(autoreadPort);
+    autoreadPort++;
+    autoreadPort%=muxPorts;
+    return analogInputValue;
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//assign variables
+//save the pointer to a variable to an internal database.
+//when doing autoreads this variable is then automatically updated.
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void multiplexer::assign(int port, int *variable)
+{
+  assignedVar[port] = variable;
+  DEBUG_PRINT( (int) assignedVar[port]);
 }
 
