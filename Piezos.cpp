@@ -5,9 +5,6 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Read piezo
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-int PiezoCurrentValue[8];
-int PiezoLastValue[8];
-int PiezoDirection[8];
 const int numPiezos = 4;
 
 typedef enum  {idle=0, rise=1, fall=2} piezoState_t;
@@ -129,11 +126,11 @@ int PiezoSound(int numPiezo, uint16_t velocity)
   char* filename = serialFlash_Samples[Piezo[p].sample];
   for(int i=0;i<8;i++)
   {
-    if(!playFlashRaw[i]->isPlaying())
+    if(!playFlashRaw[i].isPlaying())
     {
       //found an idle play playFlashRaw object, make a sound
-      playFlashRaw[i]->play(filename);
-      EffectGain[i]->gain(velocity);
+      playFlashRaw[i].play(filename);
+      gainer[i].gain(velocity);
       sampleCounts[i] = sampleCountup;
       sampleCountup+=1;
       return i;
@@ -152,8 +149,8 @@ int PiezoSound(int numPiezo, uint16_t velocity)
     }
   }
   //found the oldest play playFlashRaw object, make a sound
-  playFlashRaw[oldestSample]->play(filename);
-  EffectGain[oldestSample]->gain(velocity);
+  playFlashRaw[oldestSample].play(filename);
+  gainer[oldestSample].gain(velocity);
   sampleCounts[oldestSample] = sampleCountup;
   sampleCountup+=1;
   return oldestSample;

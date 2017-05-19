@@ -88,8 +88,9 @@ void setupGPIO()
 //Setup the multiplexer objects
 //note: must be fully initialized to prevent null pointer errors
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void setupMultiplexers();
+void setupMultiplexers()
 {
+  Serial.println("setup Multiplexer");
   multiplexer1.init(0, 1, 2, 17);
   multiplexer1.assign(0,&mainVolume);
   multiplexer1.assign(1,&mainVolume);
@@ -115,7 +116,7 @@ void setupMixers()
   mixer2L.gain(1,0.25);
   mixer2L.gain(2,0.25);
   mixer2L.gain(3,0.25);
-  
+  //right
   mixer1R.gain(0,0.25);
   mixer1R.gain(1,0.25);
   mixer1R.gain(2,0.25);
