@@ -9,9 +9,10 @@ What works?
  - 4 Piezo triggers
  - Playing samples polyphonically with velocity
  - Multiplexer for analog inputs
+ - playing sequences (copy code form pre-Beatsy)
 
 What to do?
- - Recording and playing sequences (copy code form pre-Beatsy)
+ - recording/editing sequences
  - Selecting sequences with trellis
  - Selecting samples
  - Some sort of GUI. Either a ILI9341 or an I2C display
