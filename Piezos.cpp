@@ -5,9 +5,6 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Read piezo
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-const int numPiezos = 4;
-
-piezoInput Piezo[8];
 
 void piezoInput::preRead()
 {
@@ -15,6 +12,16 @@ void piezoInput::preRead()
   Wire.write(0x12);
   Wire.write(physicalInput);
   Wire.endTransmission();
+}
+void piezoInput::incrementSample()
+{
+  sample+=1;
+  if(sample >= serialFlash_nSamples) sample = 0;
+}
+void piezoInput::decrementSample()
+{
+  sample-=1;
+  if(sample < 0) sample = serialFlash_nSamples-1;
 }
 void piezoInput::doState()
 {
@@ -31,20 +38,14 @@ void piezoInput::doState()
   if(State == rise && Direction < 0)
   {
     State = fall;
-    topValue = Value;
-    hit = 1;
+    topValue = min(Value,1024)-piezoRiseThreshold;
+    //max - velocity = velocity range
+    hitGain = ((1024 - velocity) <<10) + (topValue*velocity);
+    playSample(hitGain);
   }
   if(State == fall && Value < piezoFallThreshold)
   {
     State = idle;
-  }
-  if(hit == 1)
-  {
-    topValue = min(topValue,1024)-piezoRiseThreshold;
-    //max - velocity = velocity range
-    hitGain = ((1024 - velocity) <<10) + (topValue*velocity);
-    hit=0;
-    playSample(hitGain);
   }
 }
 void piezoInput::setSample(uint16_t numSample)
@@ -74,13 +75,9 @@ void drainPiezos()
 //writes "current time" to sampleCounts[8]
 //if all are busy
 //find the one with the oldest count and replace it with a new one
-//
-//
 //todo:
 // - linking pads together, so one can mute the other
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 void piezoInput::playSample(uint16_t velocity)
 {
   static uint32_t sampleCounts[8];
@@ -112,13 +109,17 @@ void piezoInput::playSample(uint16_t velocity)
 }
 void setupPiezos()
 {
-  Piezo[0].setSample(0);
+  Piezo[0].setSample(37);//kick
   Piezo[0].setPhysicalInput(0);
-  Piezo[1].setSample(76);
+  Piezo[1].setSample(76);//rim
   Piezo[1].setPhysicalInput(1);
-  Piezo[2].setSample(37);
+  Piezo[2].setSample(0);//hat
   Piezo[2].setPhysicalInput(2);
-  Piezo[3].setSample(65);
+  Piezo[3].setSample(65);//ride
   Piezo[3].setPhysicalInput(3);
+  Piezo[4].setPhysicalInput(4);
+  Piezo[5].setPhysicalInput(5);
+  Piezo[6].setPhysicalInput(6);
+  Piezo[7].setPhysicalInput(7);
 }
 

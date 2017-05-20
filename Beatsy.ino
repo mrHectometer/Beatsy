@@ -25,12 +25,14 @@
 #include "Piezos.h"
 #include "FlashStorage.h"
 #include "Mux.h"
+#include "TestTracks.h"
+#include "sequencer.h"
 #include <effect_gain.h>
 
 
 const int FlashChipSelect = 6; // digital pin for flash chip CS pin
 
-multiplexer multiplexer1;
+
 int mainVolume;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the port expander
@@ -102,6 +104,23 @@ void setupMultiplexers()
   multiplexer1.assign(7,&mainVolume);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Setup the tracks, fill them with preprogrammed stuff
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void setupTracks()
+{
+  init_track0();
+  init_track1();
+  init_track2();
+  init_track3();
+  init_track4();
+  init_track5();
+  init_track6();
+  init_track7();
+  init_track8();
+  init_track9();
+  init_track10();
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the mixer objects
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 void setupMixers()
@@ -135,15 +154,17 @@ void setupMixers()
 void setup() 
 {
   AudioMemory(40);
-  //while(!Serial) ;
   setupGPIO();
   setupFlash(FlashChipSelect);
   setupPortExpander();
   setupMixers();
   setupMultiplexers();
   setupPiezos();
+  setupTracks();
   audioShield.enable();
   audioShield.volume(0.9);
+  sequencer1.setCurrentTrack(&Track[10]);//select preprogrammed track with only hats
+  sequencer1.setbpm(100);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Main loop

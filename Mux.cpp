@@ -23,9 +23,10 @@ void multiplexer::init(int _S0, int _S1, int _S2, int _common)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 int multiplexer::read(int port)
 {
-    digitalWrite(S0,bitRead(port,0));
-    digitalWrite(S1,bitRead(port,1));
-    digitalWrite(S2,bitRead(port,2));
+    digitalWriteFast(S0,bitRead(port,0));
+    digitalWriteFast(S1,bitRead(port,1));
+    digitalWriteFast(S2,bitRead(port,2));
+    delayMicroseconds(20);//experiment with value
     int analogInputValue = analogRead(common);
     if(*assignedVar[port] != NULL)
     {

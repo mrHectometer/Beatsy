@@ -1,6 +1,7 @@
 #include "FlashStorage.h"
 
 char serialFlash_Samples[256][20];
+int serialFlash_nSamples;
 int serialFlash_Samples_List()
 {
   SerialFlash.opendir();
@@ -29,8 +30,8 @@ int setupFlash(int FlashChipSelect)
   if (!SerialFlash.begin(FlashChipSelect)) {
     Serial.println("Unable to access SPI Flash chip");
   }
-  int n = serialFlash_Samples_List();
-  Serial.print(n);
+  serialFlash_nSamples = serialFlash_Samples_List();
+  Serial.print(serialFlash_nSamples);
   Serial.println(" files found on flash");
 }
 

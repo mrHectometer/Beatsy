@@ -1,16 +1,18 @@
 #ifndef piezos_h
 #define piezos_h
-
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Includes
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 #include <Arduino.h>
 #include <Wire.h>
 #include <audio.h>
 #include "flashstorage.h"
 #include "effect_gain.h"
-
+#include "flashStorage.h"
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Variables
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-extern const int numPiezos;
+const int numPiezos = 4;
 
 //available from other file. Maybe not how it should be
 extern AudioPlaySerialflashRaw playFlashRaw[];
@@ -33,7 +35,8 @@ class piezoInput
   void playSample(uint16_t velocity);
   void setPhysicalInput(int i){physicalInput=i;}
   piezoState_t getState() {return State;}
-
+  void incrementSample();
+  void decrementSample();
   private:
   int16_t Value;
   int16_t topValue;
@@ -45,9 +48,7 @@ class piezoInput
   int16_t sampleGain;
   int16_t hitGain;
   int physicalInput;
-  bool hit;
   piezoState_t State;
- 
 };
 extern piezoInput Piezo[];
 #endif
