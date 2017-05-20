@@ -141,7 +141,7 @@ void setup()
   setupPortExpander();
   setupMixers();
   setupMultiplexers();
-  piezoPreset();
+  setupPiezos();
   audioShield.enable();
   audioShield.volume(0.9);
 }
@@ -153,9 +153,9 @@ void loop()
 {
   //first select the piezo with prereadpiezo
   //then wait a bit
-  preReadPiezo(currentPiezo);
+  Piezo[currentPiezo].preRead();
   delayMicroseconds(50);
-  PiezoState(currentPiezo);//then read
+  Piezo[currentPiezo].doState();//then read
   drainPiezos();//and drain
   
   currentPiezo+=1;

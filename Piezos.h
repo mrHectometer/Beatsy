@@ -15,24 +15,25 @@ extern const int numPiezos;
 //available from other file. Maybe not how it should be
 extern AudioPlaySerialflashRaw playFlashRaw[];
 extern AudioEffectGain gainer[];
+typedef enum  {idle=0, rise=1, fall=2} piezoState_t;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Functions
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void preReadPiezo(int numPiezo);
-void PiezoSetSample(int numPiezo, uint16_t numSample);
-int PiezoState(int numPiezo);
 void drainPiezos();
-int PiezoSound(int numPiezo, uint16_t velocity);
-void piezoPreset();
-/*
-class piezo
+void setupPiezos();
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Main piezo class
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+class piezoInput
 {
   public:
-  preRead();
-  setSample(uint16_t numSample);
-  read();
-  drain();
-  sound(uint16_t velocity);
+  void setSample(uint16_t numSample);
+  void preRead();
+  void doState();
+  void playSample(uint16_t velocity);
+  void setPhysicalInput(int i){physicalInput=i;}
+  piezoState_t getState() {return State;}
+
   private:
   int16_t Value;
   int16_t topValue;
@@ -43,7 +44,10 @@ class piezo
   int16_t velocity = 256;//0-512
   int16_t sampleGain;
   int16_t hitGain;
+  int physicalInput;
   bool hit;
   piezoState_t State;
-};*/
+ 
+};
+extern piezoInput Piezo[];
 #endif
