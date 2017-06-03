@@ -23,8 +23,9 @@ void piezoInput::decrementSample()
   sample-=1;
   if(sample < 0) sample = serialFlash_nSamples-1;
 }
-void piezoInput::doState()
+int piezoInput::doState()
 {
+  int hit = 0;
   int piezoRiseThreshold = 50;
   int piezoFallThreshold = 40;
   LastValue = Value;
@@ -40,13 +41,15 @@ void piezoInput::doState()
     State = fall;
     topValue = min(Value,1024)-piezoRiseThreshold;
     //max - velocity = velocity range
-    hitGain = ((1024 - velocity) <<10) + (topValue*velocity);
+    int hitGain = ((1024 - velocity) <<10) + (topValue*velocity);
     playSample(hitGain);
+    hit = hitGain;
   }
   if(State == fall && Value < piezoFallThreshold)
   {
     State = idle;
   }
+  return hit;
 }
 void piezoInput::setSample(uint16_t numSample)
 {
@@ -103,6 +106,7 @@ void piezoInput::playSample(uint16_t velocity)
   //no quiet sampler found? play the oldest
   if(chosenSampler == -1) chosenSampler = oldestSampler;
   playFlashRaw[chosenSampler].play(filename);
+  velocity = (velocity*sampleGain)>>10;
   gainer[chosenSampler].gain(velocity);
   sampleCounts[chosenSampler] = sampleCountup;
   sampleCountup+=1;

@@ -26,11 +26,12 @@ int multiplexer::read(int port)
     digitalWriteFast(S0,bitRead(port,0));
     digitalWriteFast(S1,bitRead(port,1));
     digitalWriteFast(S2,bitRead(port,2));
-    delayMicroseconds(20);//experiment with value
+    delayMicroseconds(50);//experiment with value
     int analogInputValue = analogRead(common);
-    if(*assignedVar[port] != NULL)
+    if(assignedVar[port] != nullptr && abs(analogInputValue-oldInputValue[port]) > 10)
     {
         *assignedVar[port] = analogInputValue;
+        oldInputValue[port] = analogInputValue;
     }
     return analogInputValue;
 }
@@ -43,7 +44,7 @@ int multiplexer::read()
 {
     int analogInputValue = read(autoreadPort);
     autoreadPort++;
-    autoreadPort%=muxPorts;
+    autoreadPort%=8;
     return analogInputValue;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,9 +52,10 @@ int multiplexer::read()
 //save the pointer to a variable to an internal database.
 //when doing autoreads this variable is then automatically updated.
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void multiplexer::assign(int port, int *variable)
+void multiplexer::assign(int port, int16_t *variable)
 {
   assignedVar[port] = variable;
-  DEBUG_PRINT( (int) assignedVar[port]);
+  int16_t i = *assignedVar[port];
+  DEBUG_PRINT(i);
 }
 

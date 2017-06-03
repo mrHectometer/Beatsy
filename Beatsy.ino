@@ -2,10 +2,8 @@
 //Beatsy
 //
 //todo:
-// - Piezo input 3 doesn't drain
 // - make a proper board
-// - add trellis and sequencer
-// - refactor piezos (make classes)
+// - add trellis
 // - add rotary switch to switch patch/sample
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -33,7 +31,9 @@
 const int FlashChipSelect = 6; // digital pin for flash chip CS pin
 
 
-int mainVolume;
+int16_t mainVolume;
+int16_t sequencerBpm=100;
+int16_t testValue2;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the port expander
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -95,13 +95,8 @@ void setupMultiplexers()
   Serial.println("setup Multiplexer");
   multiplexer1.init(0, 1, 2, 17);
   multiplexer1.assign(0,&mainVolume);
-  multiplexer1.assign(1,&mainVolume);
-  multiplexer1.assign(2,&mainVolume);
-  multiplexer1.assign(3,&mainVolume);
-  multiplexer1.assign(4,&mainVolume);
-  multiplexer1.assign(5,&mainVolume);
-  multiplexer1.assign(6,&mainVolume);
-  multiplexer1.assign(7,&mainVolume);
+  multiplexer1.assign(1,&sequencerBpm);
+  multiplexer1.assign(2,&testValue2);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the tracks, fill them with preprogrammed stuff
@@ -149,6 +144,22 @@ void setupMixers()
   mixerR.gain(2,0.0);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//Audio volume
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void setAudioVolume()
+{
+  float i = mainVolume>>4;
+  i/=64.0f;
+  audioShield.volume(i);
+
+  int j = sequencerBpm>>3;
+  j+=60;
+  if(j > 1)
+  {
+    sequencer1.setbpm(j);
+  }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
@@ -176,10 +187,16 @@ void loop()
   //then wait a bit
   Piezo[currentPiezo].preRead();
   delayMicroseconds(50);
-  Piezo[currentPiezo].doState();//then read
+  int hit = Piezo[currentPiezo].doState();//then read
   drainPiezos();//and drain
-  
+  if(hit > 0)
+  {
+    multiplexer1.assign(2,&Piezo[currentPiezo].sampleGain);
+    DEBUG_PRINT(Piezo[currentPiezo].sampleGain);
+    sequencer1.recordHit(currentPiezo, hit);
+  }
   currentPiezo+=1;
   if(currentPiezo > numPiezos-1) currentPiezo = 0;
   multiplexer1.read();
+  setAudioVolume();
 }

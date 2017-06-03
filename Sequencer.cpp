@@ -13,7 +13,10 @@ sequencer::sequencer()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void sequencer::setbpm(uint16_t newbpm)
 {
-	bpm = newbpm;
+  oldbpm = bpm;
+	
+  if(oldbpm == newbpm) return;
+  bpm = newbpm;
 	if(newbpm == 0)
 	{
 		seqTimer.end();
@@ -27,6 +30,18 @@ void sequencer::setbpm(uint16_t newbpm)
 		Serial.print("Sequencer BPM changed:");
 		Serial.println(newbpm);
 	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//record and erase
+void sequencer::recordHit(int piezo, int velocity)
+{
+   if(mode !=RECORD) return;
+    currentTrack->data[currentTick][piezo] = velocity >> 8;
+}
+void sequencer::eraseHit(int piezo)
+{
+   if(mode !=ERASE) return;
+    currentTrack->data[currentTick][piezo] = 0;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //play sequence

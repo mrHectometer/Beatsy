@@ -29,14 +29,16 @@ void setupPiezos();
 class piezoInput
 {
   public:
+  int16_t sampleGain = 1024;
   void setSample(uint16_t numSample);
   void preRead();
-  void doState();
+  int doState();
   void playSample(uint16_t velocity);
   void setPhysicalInput(int i){physicalInput=i;}
   piezoState_t getState() {return State;}
   void incrementSample();
   void decrementSample();
+  int16_t velocity = 256;//0-512
   private:
   int16_t Value;
   int16_t topValue;
@@ -44,9 +46,6 @@ class piezoInput
   int16_t Direction;
   int16_t timeOut;//(probably) needed after draining to avoid bouncing
   int16_t sample;
-  int16_t velocity = 256;//0-512
-  int16_t sampleGain;
-  int16_t hitGain;
   int physicalInput;
   piezoState_t State;
 };

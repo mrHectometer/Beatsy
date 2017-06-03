@@ -22,12 +22,13 @@ class multiplexer
 {
   public:
   void init(int _S0, int _S1, int _S2, int _common);
-  void assign(int port, int *variable);
+  void assign(int port, int16_t *variable);
   int read(int port);
   int read();
   private:
   int S0,S1,S2,common;
-  int *assignedVar[8];
+  int16_t *assignedVar[8];
+  int16_t oldInputValue[8];
   int muxPorts = 8;
   int autoreadPort=0;
 };
