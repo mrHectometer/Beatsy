@@ -144,9 +144,9 @@ void setupMixers()
   mixerR.gain(2,0.0);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-//Audio volume
+//Audio volume and bpm
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void setAudioVolume()
+void setGlobalAudioVars()
 {
   float i = mainVolume>>4;
   i/=64.0f;
@@ -158,6 +158,25 @@ void setAudioVolume()
   {
     sequencer1.setbpm(j);
   }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//readoutPiezo
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+void readoutPiezo()
+{
+  static int currentPiezo;//current Piezo, 0-7
+  Piezo[currentPiezo].preRead();
+  delayMicroseconds(50);
+  int hit = Piezo[currentPiezo].doState();//then read
+  drainPiezos();//and drain
+  if(hit > 0)
+  {
+    multiplexer1.assign(2,&Piezo[currentPiezo].sampleGain);
+    multiplexer1.assign(3,&Piezo[currentPiezo].velocity);
+    sequencer1.recordHit(currentPiezo, hit);
+  }
+  currentPiezo+=1;
+  if(currentPiezo > numPiezos-1) currentPiezo = 0;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup
@@ -180,23 +199,9 @@ void setup()
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Main loop
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-int currentPiezo;//current Piezo, 0-7
 void loop() 
 {
-  //first select the piezo with prereadpiezo
-  //then wait a bit
-  Piezo[currentPiezo].preRead();
-  delayMicroseconds(50);
-  int hit = Piezo[currentPiezo].doState();//then read
-  drainPiezos();//and drain
-  if(hit > 0)
-  {
-    multiplexer1.assign(2,&Piezo[currentPiezo].sampleGain);
-    DEBUG_PRINT(Piezo[currentPiezo].sampleGain);
-    sequencer1.recordHit(currentPiezo, hit);
-  }
-  currentPiezo+=1;
-  if(currentPiezo > numPiezos-1) currentPiezo = 0;
+  readoutPiezo();
   multiplexer1.read();
-  setAudioVolume();
+  setGlobalAudioVars();
 }

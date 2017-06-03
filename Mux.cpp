@@ -56,6 +56,5 @@ void multiplexer::assign(int port, int16_t *variable)
 {
   assignedVar[port] = variable;
   int16_t i = *assignedVar[port];
-  DEBUG_PRINT(i);
 }
 

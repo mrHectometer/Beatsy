@@ -30,8 +30,8 @@ class sequencer
   	_Track->set_measure_ticks();
   	currentTrack = _Track;
   }
-  recordHit(int piezo, int velocity);
-  eraseHit(int piezo);
+  void recordHit(int piezo, int velocity);
+  void eraseHit(int piezo);
   void setRecord()
   {
     mode = RECORD;

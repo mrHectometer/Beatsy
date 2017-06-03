@@ -44,6 +44,7 @@ int piezoInput::doState()
     int hitGain = ((1024 - velocity) <<10) + (topValue*velocity);
     playSample(hitGain);
     hit = hitGain;
+    DEBUG_PRINT(hitGain);
   }
   if(State == fall && Value < piezoFallThreshold)
   {

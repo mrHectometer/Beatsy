@@ -38,7 +38,7 @@ class piezoInput
   piezoState_t getState() {return State;}
   void incrementSample();
   void decrementSample();
-  int16_t velocity = 256;//0-512
+  int16_t velocity = 256;//0-1024
   private:
   int16_t Value;
   int16_t topValue;
