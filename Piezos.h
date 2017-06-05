@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <audio.h>
+#include <debugtools.h>
 #include "flashstorage.h"
 #include "effect_gain.h"
 #include "flashStorage.h"

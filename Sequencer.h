@@ -20,26 +20,12 @@ class sequencer
  public:
 	
 	sequencer();
-  void setNextTrack(TrackClass* _Track)
-  {
-  	_Track->set_measure_ticks();
-  	nextTrack = _Track;
-  }
-  void setCurrentTrack(TrackClass* _Track)
-  {
-  	_Track->set_measure_ticks();
-  	currentTrack = _Track;
-  }
+  void setNextTrack(TrackClass* _Track){ _Track->set_measure_ticks(); nextTrack = _Track; }
+  void setCurrentTrack(TrackClass* _Track){ _Track->set_measure_ticks(); currentTrack = _Track; }
   void recordHit(int piezo, int velocity);
   void eraseHit(int piezo);
-  void setRecord()
-  {
-    mode = RECORD;
-  }
-  void setPlay()
-  {
-    mode = PLAY;
-  }
+  void setRecord(){ mode = RECORD;}
+  void setPlay(){ mode = PLAY;}
 	//void
 	void play();
 	void setbpm(uint16_t newbpm);

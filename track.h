@@ -5,7 +5,6 @@
 
 
 #include "arduino.h"
-#include <ILI9341_t3.h>
 #include <SD.h>
 
 class TrackClass

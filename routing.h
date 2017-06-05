@@ -3,7 +3,7 @@
 
 #include <effect_gain.h>
 #include "piezos.h"
-#include "Mux.h"
+#include <Mux.h>
 #include "sequencer.h"
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Periphery that is not Audio

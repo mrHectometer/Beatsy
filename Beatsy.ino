@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #define DEBUG
-#include "debugutils.h"
+#include <debugtools.h>
 #include <Wire.h>
 #include <Audio.h>
 #include <SPI.h>
@@ -22,11 +22,11 @@
 #include "routing.h"
 #include "Piezos.h"
 #include "FlashStorage.h"
-#include "Mux.h"
+#include <Mux.h>
 #include "TestTracks.h"
 #include "sequencer.h"
 #include <effect_gain.h>
-
+#include <Adafruit_Trellis.h>
 
 const int FlashChipSelect = 6; // digital pin for flash chip CS pin
 
