@@ -11,31 +11,29 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Includes
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#define DEBUG
 #include <debugtools.h>
 #include <Wire.h>
 #include <Audio.h>
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include <effect_gain.h>
+#include <Adafruit_Trellis.h>
 #include "routing.h"
 #include "Piezos.h"
 #include "FlashStorage.h"
 #include <Mux.h>
 #include "TestTracks.h"
 #include "sequencer.h"
-#include <effect_gain.h>
-#include <Adafruit_Trellis.h>
 
+#define DEBUG
 const int FlashChipSelect = 6; // digital pin for flash chip CS pin
-
-
 int16_t mainVolume;
 int16_t sequencerBpm=100;
 int16_t testValue2;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Setup the port expander
+//used for the piezo reader
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 void setupPortExpander()
 {
@@ -146,18 +144,13 @@ void setupMixers()
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //Audio volume and bpm
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-void setGlobalAudioVars()
+void updateGlobalAudioVars()
 {
   float i = mainVolume>>4;
-  i/=64.0f;
-  audioShield.volume(i);
+  audioShield.volume(i/64.0f);
 
-  int j = sequencerBpm>>3;
-  j+=60;
-  if(j > 1)
-  {
-    sequencer1.setbpm(j);
-  }
+  int j = (sequencerBpm>>3) + 60;
+  sequencer1.setbpm(j);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //readoutPiezo
@@ -192,7 +185,7 @@ void setup()
   setupPiezos();
   setupTracks();
   audioShield.enable();
-  audioShield.volume(0.9);
+  audioShield.volume(0.8);
   sequencer1.setCurrentTrack(&Track[10]);//select preprogrammed track with only hats
   sequencer1.setbpm(100);
 }
@@ -203,5 +196,5 @@ void loop()
 {
   readoutPiezo();
   multiplexer1.read();
-  setGlobalAudioVars();
+  updateGlobalAudioVars();
 }
