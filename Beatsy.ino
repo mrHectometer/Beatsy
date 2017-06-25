@@ -18,10 +18,12 @@
 #include <SD.h>
 #include <SerialFlash.h>
 #include <effect_gain.h>
-#include <Adafruit_Trellis.h>
+#include <Encoder.h>
+
 #include "routing.h"
 #include "Piezos.h"
 #include "FlashStorage.h"
+#include "trellisdriver.h"
 #include <Mux.h>
 #include "TestTracks.h"
 #include "sequencer.h"
@@ -54,9 +56,9 @@ void setupPortExpander()
 //0     Multiplexer S0
 //1     Multiplexer S1
 //2     Multiplexer S2
-//3
-//4
-//5
+//3     Rotary encoder A
+//4     Rotary encoder B
+//5     Trellis interrupt
 //6     Flash Chip select
 //7     SPI MOSI
 //8
@@ -71,6 +73,8 @@ void setupPortExpander()
 //17    Multiplexer analog input A
 //18    I2S SDA
 //19    I2S SCL
+//20
+//21
 //22    Audio board TX
 //23    Audio board LRCLK
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -178,12 +182,14 @@ void setup()
 {
   AudioMemory(40);
   setupGPIO();
+  trellisSetup();
   setupFlash(FlashChipSelect);
   setupPortExpander();
   setupMixers();
   setupMultiplexers();
   setupPiezos();
   setupTracks();
+  
   audioShield.enable();
   audioShield.volume(0.8);
   sequencer1.setCurrentTrack(&Track[10]);//select preprogrammed track with only hats
@@ -197,4 +203,6 @@ void loop()
   readoutPiezo();
   multiplexer1.read();
   updateGlobalAudioVars();
+  int i = trellisReadout();
+  if(i != -1) sequencer1.setNextTrack(&Track[i]);
 }

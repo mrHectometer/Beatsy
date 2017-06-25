@@ -14,7 +14,6 @@ sequencer::sequencer()
 void sequencer::setbpm(uint16_t newbpm)
 {
   oldbpm = bpm;
-	
   if(abs(oldbpm - newbpm) < 5) return;
   bpm = newbpm;
 	if(newbpm == 0)
